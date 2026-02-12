@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vesper_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vesper_chat
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - vesper-network
+
+  backend:
+    build: ./backend
+    container_name: vesper_backend
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/vesper_chat
+      - JWT_SECRET=vesper_premium_secret_key_2026
+      - PORT=5000
+    depends_on:
+      - postgres
+    networks:
+      - vesper-network
+
+  frontend:
+    build: ./frontend
+    container_name: vesper_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - vesper-network
+
+networks:
+  vesper-network:
+    driver: bridge
+
+volumes:
+  pgdata:
