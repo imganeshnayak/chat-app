@@ -14,11 +14,6 @@ export const AuthProvider = ({ children }) => {
         if (storedUser && token) {
             setUser(JSON.parse(storedUser));
             checkSession();
-        } else if (import.meta.env.MODE !== 'production') {
-            // Development/Testing Bypass: Automatically log in as a mock admin
-            const mockUser = { id: 1, username: 'dev_admin', displayName: 'Dev Admin', role: 'admin' };
-            setUser(mockUser);
-            setLoading(false);
         } else {
             setLoading(false);
         }
